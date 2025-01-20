@@ -2,12 +2,12 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const crypto = require("crypto"); // For generating unique tokens
-const nodemailer = require("nodemailer"); // For sending emails
+const nodemailer = require("nodemailer"); 
 
-const SECRET_KEY = process.env.JWT_SECRET_KEY; // Use environment variable
-const FRONTEND_URL = process.env.FRONTEND_URL; // Use environment variable
-const EMAIL = process.env.EMAIL; // Use environment variable
-const PASSWORD = process.env.PASSWORD; // Use environment variable
+const SECRET_KEY = process.env.JWT_SECRET_KEY; 
+const BACKEND_URL = process.env.BACKEND_URL; 
+const EMAIL = process.env.EMAIL; 
+const PASSWORD = process.env.PASSWORD; 
 
 // User Signup
 exports.signup = async (req, res) => {
@@ -37,7 +37,7 @@ exports.signup = async (req, res) => {
     await newUser.save();
 
     // Send a verification email
-    const verificationLink = `${FRONTEND_URL}/verify-email?token=${verificationToken}&email=${email}`;
+    const verificationLink = `${BACKEND_URL}/auth/verify-email?token=${verificationToken}&email=${email}`;
     await sendVerificationEmail(email, verificationLink);
 
     res.status(201).json({
@@ -45,6 +45,12 @@ exports.signup = async (req, res) => {
     });
   } catch (error) {
     console.error("Error during signup:", error);
+    // Cleanup: Check if a user was saved in the database and delete it
+    const user = await User.findOne({ email });   // earlier user won't be here, as that case already handled
+    if (user) {
+      await User.findByIdAndDelete(user._id);
+      console.log(`User with email ${email} deleted due to email sending failure.`);
+    }
     res.status(500).json({ error: "An error occurred during signup." });
   }
 };
@@ -53,10 +59,13 @@ exports.signup = async (req, res) => {
 const sendVerificationEmail = async (email, link) => {
   // Configure the email transport
   const transporter = nodemailer.createTransport({
-    service: "Gmail", // Use your email provider
+    // service: "Gmail", // Use your email provider
+    host: 'smtp.gmail.com',
+    port: 587,
+    service: 'gmail',
     auth: {
-      user: EMAIL, // Replace with your email
-      pass: PASSWORD, // Replace with your email password or app password
+      user: EMAIL,    // Replace with your email
+      pass: PASSWORD, // Replace with your app password
     },
   });
 
