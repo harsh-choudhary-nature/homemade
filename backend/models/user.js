@@ -18,22 +18,6 @@ const userSchema = new mongoose.Schema({
   verificationToken: {
     type: String,     // Store the unique token for email verification
   },
-  refreshTokens: [    // multiple refresh tokens for multiple devices handling
-    {
-      token: {
-        type: String,
-        required: true,
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now,
-      },
-      expiresAt: {
-        type: Date,
-        required: true,
-      },
-    },
-  ],
 });
 
 // Create and export the user model

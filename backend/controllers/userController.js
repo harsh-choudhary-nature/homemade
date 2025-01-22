@@ -113,58 +113,37 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ error: "User not found." });
-
+    // Check if user is verified
+    if (!user.isVerified) {
+      return res.status(403).json({ error: "Please verify your email before logging in." });
+    }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid)
       return res.status(401).json({ error: "Invalid credentials." });
 
-    const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: "1h" });
+    // Generate access token (short-lived)
+    const accessToken = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "15m" } // Access token expires in 15 minutes
+    );
 
-    res.status(200).json({ message: "Login successful!", token });
+    // Generate refresh token (long-lived)
+    const refreshToken = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "7d" } // Refresh token expires in 7 days
+    );
+
+    // Send tokens to the client
+    res.status(200).json({
+      message: "Login successful.",
+      accessToken,
+      refreshToken,
+    });
+
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ error: "An error occurred during login." });
   }
 };
-
-exports.saveRefreshToken = async (userId, refreshToken, expiresIn) => {
-  const hashedToken = await bcrypt.hash(refreshToken, 10);
-  const expiresAt = new Date(Date.now() + expiresIn * 1000); // expiresIn is in seconds
-
-  await User.findByIdAndUpdate(userId, {
-    $push: {
-      refreshTokens: {
-        token: hashedToken,
-        expiresAt,
-      },
-    },
-  });
-}
-
-exports.validateRefreshToken = async (userId, refreshToken) => {
-  const user = await User.findById(userId);
-
-  if (!user) return false;
-
-  const validToken = user.refreshTokens.find(async (t) => {
-    return await bcrypt.compare(refreshToken, t.token) && t.expiresAt > Date.now();
-  });
-
-  return !!validToken; // Return true if a valid token is found
-}
-
-exports.revokeRefreshToken = async (userId, refreshToken) => {
-  const user = await User.findById(userId);
-
-  if (!user) return;
-
-  const hashedToken = await bcrypt.hash(refreshToken, 10);
-
-  await User.findByIdAndUpdate(userId, {
-    $pull: { refreshTokens: { token: hashedToken } },
-  });
-}
-
-exports.cleanupExpiredTokens = async () => {
-  await User.updateMany({}, { $pull: { refreshTokens: { expiresAt: { $lt: Date.now() } } } });
-}
