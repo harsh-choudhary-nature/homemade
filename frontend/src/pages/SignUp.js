@@ -4,7 +4,7 @@ import axios from "axios";
 
 
 const SignupPage = () => {
-  const URL = "http://localhost:5000"
+  const URL = process.env.BACKEND_ROOT_URL
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -23,7 +23,7 @@ const SignupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear any previous errors
+    setError("");   // Clear any previous errors
     setSuccess(""); // Clear any previous success messages
 
     if (formData.password !== formData.confirmPassword) {
@@ -37,7 +37,7 @@ const SignupPage = () => {
         password: formData.password,
       });
       setLoading(false);
-      setSuccess("Signup successful!"); // Set success message
+      setSuccess("Signup successful! Please check your email and verify your account!"); // Set success message
       setFormData({ email: "", password: "", confirmPassword: "" }); // Clear the form
       console.log("Signup response:", response.data);
     } catch (err) {
@@ -95,7 +95,7 @@ const SignupPage = () => {
         <p className="login-prompt">
           Already have an account? <Link to="/login">Log in</Link>
         </p>
-      {error && <p className="error-message">{`*** ${error}`}</p>}
+      {error && <p className="error-message">{error}</p>}
       {success && <p className="success-message">{success}</p>}
       </form>
     </div>
