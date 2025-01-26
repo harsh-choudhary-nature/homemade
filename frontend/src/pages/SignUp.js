@@ -31,26 +31,24 @@ const SignupPage = () => {
       setError("Passwords do not match!");
       return;
     }
-    setLoading(true);
-    setTimeout(async ()=>{
-      try {
-        console.log(`${URL}/auth/signup`);
-        const response = await axios.post(`${URL}/auth/signup`, {
-          email: formData.email,
-          password: formData.password,
-        });
-        setLoading(false);
-        setSuccess("Signup successful! Please check your email and verify your account!"); // Set success message
-        setFormData({ email: "", password: "", confirmPassword: "" }); // Clear the form
-        console.log("Signup response:", response.data);
-      } catch (err) {
-        setLoading(false);
-        setError(
-          err.response?.data?.error || "An error occurred during signup."
-        );
-        console.error("Signup error:", err);
-      }
-    }, 2000);
+    try {
+      console.log(`${URL}/auth/signup`);
+      setLoading(true);
+      const response = await axios.post(`${URL}/auth/signup`, {
+        email: formData.email,
+        password: formData.password,
+      });
+      setLoading(false);
+      setSuccess("Signup successful! Please check your email and verify your account!"); // Set success message
+      setFormData({ email: "", password: "", confirmPassword: "" }); // Clear the form
+      console.log("Signup response:", response.data);
+    } catch (err) {
+      setLoading(false);
+      setError(
+        err.response?.data?.error || "An error occurred during signup."
+      );
+      console.error("Signup error:", err);
+    }
   };
 
   return (

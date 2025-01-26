@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUser } from "../contexts/UserContext";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
