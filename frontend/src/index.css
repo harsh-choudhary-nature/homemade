@@ -26,9 +26,9 @@ body {
   font-family: 'Arial', sans-serif;
   background-color: var(--primary-color);
   color: var(--text-color);
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* min-height: 100vh; */
 }
 
 main {
@@ -204,10 +204,11 @@ main {
 .signup-container, .login-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  /* align-items: center; */
+  /* min-height: 100vh; */
   background-color: var(--primary-color);
   padding: 20px;
+  margin-top: 32px;
 }
 
 .signup-form, .login-form {
@@ -327,3 +328,31 @@ footer {
   border-top: 1px solid var(--nav-border-color);
   margin-top: auto;
 }
+
+/* Loader Styles */
+
+.loader {
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  height: 100%;
+}
+
+.loader .spinner {
+  border: 4px solid transparent;
+  border-top: 4px solid var(--text-color);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
