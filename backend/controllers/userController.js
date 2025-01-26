@@ -11,6 +11,7 @@ const PASSWORD = process.env.PASSWORD;
 
 // User Signup
 exports.signup = async (req, res) => {
+  console.log("Request received");
   const { email, password } = req.body;
 
   try {
@@ -81,6 +82,7 @@ const sendVerificationEmail = async (email, link) => {
 
   // Send the email
   await transporter.sendMail(mailOptions);
+  console.log("Email sent!")
 };
 
 // User Email Verification
@@ -100,7 +102,9 @@ exports.verifyEmail = async (req, res) => {
     user.verificationToken = undefined; // Clear the token
     await user.save();
 
-    res.status(200).json({ message: "Email verified successfully. You can now log in." });
+    res.status(200).json({ message: "Email verified successfully. You can now log in.",
+      loginUrl: `${process.env.FRONTEND_URL}/login`,
+     });
   } catch (error) {
     console.error("Error during email verification:", error);
     res.status(500).json({ error: "An error occurred during email verification." });

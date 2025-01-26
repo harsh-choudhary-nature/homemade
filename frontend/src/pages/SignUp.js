@@ -4,7 +4,7 @@ import axios from "axios";
 
 
 const SignupPage = () => {
-  const URL = process.env.BACKEND_ROOT_URL
+  const URL = process.env.REACT_APP_BACKEND_ROOT_URL
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -32,6 +32,7 @@ const SignupPage = () => {
     }
     try {
       setLoading(true);
+      console.log(`${URL}/auth/signup`);
       const response = await axios.post(`${URL}/auth/signup`, {
         email: formData.email,
         password: formData.password,
