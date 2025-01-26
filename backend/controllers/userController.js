@@ -139,11 +139,17 @@ exports.login = async (req, res) => {
       { expiresIn: "7d" } // Refresh token expires in 7 days
     );
 
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
     // Send tokens to the client
     res.status(200).json({
       message: "Login successful.",
       accessToken,
-      refreshToken,
     });
 
   } catch (error) {
