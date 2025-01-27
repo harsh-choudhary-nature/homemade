@@ -1,14 +1,14 @@
 
-
-const Chip = ({ label, color }) => {
+const Chip = ({ label, onClick }) => {
     return (
-        <div
+      <div
         className="chip"
-        style={{
-            backgroundColor: color,
-        }}
-        >
+        onClick={onClick}
+      >
         {label}
-        </div>
+      </div>
     );
-    };
+  };
+  
+  export default Chip;
+  

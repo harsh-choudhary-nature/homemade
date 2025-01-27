@@ -124,6 +124,7 @@ main {
   font-size: 32px;
   color: var(--text-color);
   cursor: pointer;
+  transition: color 0.3s ease;
 }
 
 .nav-theme .material-icons:hover {
@@ -356,3 +357,30 @@ footer {
   }
 }
 
+/* Chip Styles */
+.chip {
+  background-color: var(--secondary-color);
+  color: textColorvar(--text-color);
+  padding: 8px 16px;
+  border-radius: 16px;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0 8px;
+  text-align: center;
+  border: 1px solid var(--text-color);
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.chip:hover {
+  background-color: var(--text-color); 
+  color: var(--secondary-color); 
+  border-color: var(--secondary-color); 
+}
+
+/* Global Link Styles */
+a {
+  color: inherit; /* Inherit text color from the parent element */
+  text-decoration: none; /* Remove underline if desired */
+}

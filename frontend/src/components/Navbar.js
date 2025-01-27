@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { useState } from 'react';
+import { useUser } from '../contexts/UserContext';
+import Chip from './Chip';
+import { Link } from 'react-router-dom';
 
 const Navbar = ()=> {
+  const { user, logout } = useUser();
   const [theme, setTheme] = useState('light');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
@@ -12,6 +16,18 @@ const Navbar = ()=> {
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleLogoutClick = () => {
+    logout(); // Call logout from context
+  };
+
+  const handleLoginClick = () => {
+
+  };
+
+  const handleSignupClick = () => {
+
   };
 
   return (
@@ -26,9 +42,13 @@ const Navbar = ()=> {
         <h2 className="nav-title">HomeMade</h2>
       </div>
       <div className="nav-items">
-        <div className="search-icon">
-          <span className="material-icons">search</span>
-        </div>
+        
+        {
+          user && 
+          <div className="search-icon">
+            <span className="material-icons">search</span>
+          </div>
+        }
         <div className="nav-theme" onClick={toggleTheme}>
           {theme === 'light' ? (
             <span className="material-icons">dark_mode</span>
@@ -36,13 +56,35 @@ const Navbar = ()=> {
             <span className="material-icons">light_mode</span>
           )}
         </div>
-        <div className="nav-user">
-          <span className="nav-circle-letter">{"P"}</span>
-        </div>
-        <div className="nav-login-logout">
-          <span className="nav-login">Login/Sign Up</span>
-          <span className="nav-logout">Logout</span>
-        </div>
+        {user ? (
+          <>
+            <div className="nav-user">
+              <span className="nav-circle-letter">
+                {user.email[0].toUpperCase()}
+              </span>
+            </div>
+            
+            <Chip
+              label="Logout"
+              onClick={handleLogoutClick}
+            />
+          </>
+        ) : (
+          <>
+            <Link to="/login">
+              <Chip
+                label="Login"
+                onClick={handleLoginClick}
+              />
+            </Link>
+            <Link to="/signup">
+              <Chip
+                label="Signup"
+                onClick={handleSignupClick}
+              />
+            </Link>
+          </>
+        )}
       </div>
       <div className={`sidebar-items ${isSidebarOpen ? 'show' : 'hide'}`}>
         <div className="sidebar-item">Item 1</div>

@@ -2,8 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../contexts/UserContext";
+import LoaderComponent from "../components/Loader";
 
 const LoginPage = () => {
+  const { login } = useUser();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -73,6 +76,7 @@ const LoginPage = () => {
             onChange={handleChange}
             placeholder="Enter your email"
             required
+            disabled={loading}
           />
         </div>
         <div className="form-group">
@@ -85,14 +89,20 @@ const LoginPage = () => {
             onChange={handleChange}
             placeholder="Enter your password"
             required
+            disabled={loading}
           />
         </div>
-        <button type="submit" className="login-button">
-          Log In
+        <button type="submit" className="login-button" disabled={loading}>
+          {loading ? "Logging In..." : "Log In"}
         </button>
         <p className="signup-prompt">
-          Don't have an account?&nbsp; <Link to="/signup">Sign Up</Link>
+          Don't have an account?&nbsp; <Link to="/signup" style={{ pointerEvents: loading ? "none" : "auto", color: loading ? "gray" : "" }}>
+            Sign Up
+          </Link>
         </p>
+        {error && <p className="error-message">{error}</p>}
+        {success && <p className="success-message">{success}</p>}
+        {loading && <LoaderComponent />}
       </form>
     </div>
   );
