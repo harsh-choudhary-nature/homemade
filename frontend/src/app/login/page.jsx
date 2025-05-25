@@ -1,23 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useRouter } from 'next/navigation';
+import Link from "next/link";
 import axios from "axios";
-import { useUser } from "../contexts/UserContext";
-import LoaderComponent from "../components/Loader";
+import { useUser } from "@/contexts/UserContext";
+import LoaderComponent from "@/components/Loader";
 
 const LoginPage = () => {
   const { login } = useUser();
+  const router = useRouter();
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,7 +23,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setError("");
     setLoading(true);
 
     if (!formData.email || !formData.password) {
@@ -36,27 +33,20 @@ const LoginPage = () => {
     }
 
     try {
-      // Replace with your backend login URL
-      const URL = process.env.REACT_APP_BACKEND_ROOT_URL || "http://localhost:5000";
+      const URL = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL || "http://localhost:5000";
       const response = await axios.post(`${URL}/auth/login`, {
         email: formData.email,
         password: formData.password,
       });
 
-      // Save tokens to localStorage or cookies (optional, depending on your strategy)
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
 
-      // Redirect to the dashboard
-      navigate("/dashboard");
+      router.push("/dashboard");
     } catch (err) {
-      setLoading(false);
-
       if (err.response) {
-        // Display server-provided error message
         setError(err.response.data.error || "An error occurred during login.");
       } else {
-        // Handle unexpected errors
         setError("Unable to connect to the server. Please try again.");
       }
     } finally {
@@ -98,7 +88,8 @@ const LoginPage = () => {
           {loading ? "Logging In..." : "Log In"}
         </button>
         <p className="signup-prompt">
-          Don't have an account?&nbsp; <Link to="/signup" style={{ pointerEvents: loading ? "none" : "auto", color: loading ? "gray" : "" }}>
+          Don't have an account?&nbsp; 
+          <Link href="/signup" style={{ pointerEvents: loading ? "none" : "auto", color: loading ? "gray" : "" }}>
             Sign Up
           </Link>
         </p>

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import Chip from './Chip';
-import { Link } from 'next/link';
+import Link from 'next/link';
 
 const Navbar = ()=> {
   const { user, logout } = useUser();

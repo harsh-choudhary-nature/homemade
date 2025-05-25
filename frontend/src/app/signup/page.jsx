@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import axios from "axios";
-import LoaderComponent from '../components/Loader';
-
+import LoaderComponent from '@/components/Loader';
 
 const SignupPage = () => {
-  const URL = process.env.REACT_APP_BACKEND_ROOT_URL
+  const URL = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL || "http://localhost:5000";
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -19,36 +18,32 @@ const SignupPage = () => {
   const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
-    // console.log(e)
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");   // Clear any previous errors
-    setSuccess(""); // Clear any previous success messages
+    setError("");
+    setSuccess("");
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match!");
       return;
     }
     try {
-      console.log(`${URL}/auth/signup`);
       setLoading(true);
       const response = await axios.post(`${URL}/auth/signup`, {
         email: formData.email,
         password: formData.password,
       });
       setLoading(false);
-      setSuccess("Signup successful! Please check your email and verify your account!"); // Set success message
-      setFormData({ email: "", password: "", confirmPassword: "" }); // Clear the form
+      setSuccess("Signup successful! Please check your email and verify your account!");
+      setFormData({ email: "", password: "", confirmPassword: "" });
       console.log("Signup response:", response.data);
     } catch (err) {
       setLoading(false);
-      setError(
-        err.response?.data?.error || "An error occurred during signup."
-      );
+      setError(err.response?.data?.error || "An error occurred during signup.");
       console.error("Signup error:", err);
     }
   };
@@ -68,7 +63,7 @@ const SignupPage = () => {
             placeholder="Enter your email"
             required
             disabled={loading}
-            />
+          />
         </div>
         <div className="form-group">
           <label htmlFor="password">Password<span className="required">*</span></label>
@@ -81,7 +76,7 @@ const SignupPage = () => {
             placeholder="Enter your password"
             required
             disabled={loading}
-            />
+          />
         </div>
         <div className="form-group">
           <label htmlFor="confirmPassword">Confirm Password<span className="required">*</span></label>
@@ -94,20 +89,20 @@ const SignupPage = () => {
             placeholder="Confirm your password"
             required
             disabled={loading}
-            />
+          />
         </div>
         <button type="submit" className="signup-button" disabled={loading}>
           {loading ? "Signing Up..." : "Sign Up"}
         </button>
         <p className="login-prompt">
-          Already have an account?&nbsp; 
-          <Link to="/login" style={{ pointerEvents: loading ? "none" : "auto", color: loading ? "gray" : "" }}>
+          Already have an account?&nbsp;
+          <Link href="/login" style={{ pointerEvents: loading ? "none" : "auto", color: loading ? "gray" : "" }}>
             Log in
           </Link>
         </p>
-      {error && <p className="error-message">{error}</p>}
-      {success && <p className="success-message">{success}</p>}
-      {loading && <LoaderComponent />}
+        {error && <p className="error-message">{error}</p>}
+        {success && <p className="success-message">{success}</p>}
+        {loading && <LoaderComponent />}
       </form>
     </div>
   );
