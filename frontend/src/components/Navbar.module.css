@@ -1,0 +1,144 @@
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px;
+  background-color: var(--secondary-color);
+  border-bottom: 1px solid var(--nav-border-color);
+  position: relative;
+}
+
+.nav-drawer-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-drawer-button .material-icons {
+  font-size: 32px;
+  color: var(--text-color);
+}
+
+.nav-main-item {
+  display: flex;
+  align-items: center;
+  margin-left: 10px; /* Adjust spacing from the drawer button */
+}
+
+.nav-logo {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.nav-title {
+  font-size: 1.5rem;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.nav-items {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+  color: var(--primary-color);
+  font-size: 1rem;
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+.nav-theme {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.nav-theme .material-icons {
+  font-size: 32px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.nav-theme .material-icons:hover {
+  color: var(--link-color);
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.search-icon .material-icons {
+  font-size: 32px;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.search-icon .material-icons:hover {
+  color: var(--link-color);
+}
+
+.nav-drawer-button:hover {
+  background-color: var(--hover-bg-color);
+  transition: background-color 0.3s;
+}
+
+.nav-user:hover {
+  background-color: #007bdd;
+  transition: background-color 0.3s;
+}
+
+.nav-circle-letter {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Sidebar styles */
+.sidebar-items {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  width: 250px;
+  height: calc(100vh - 60px);
+  background-color: var(--secondary-color);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.sidebar-items.show {
+  transform: translateX(0);
+}
+
+.sidebar-item {
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--hover-bg-color);
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.sidebar-item:hover {
+  background-color: var(--hover-bg-color);
+}
+
+@media (max-width: 768px) {
+  .nav-title {
+    display: none;
+  }
+}
