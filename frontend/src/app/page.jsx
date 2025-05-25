@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <div>
-      <h2>Hello world</h2>
+      <h2>Page Not Found</h2>
     </div>
   );
 }
