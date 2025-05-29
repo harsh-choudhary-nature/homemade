@@ -1,0 +1,22 @@
+.otpContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 1rem;
+    gap: 10px;
+}
+
+.otpContainer input {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    font-size: 1.5rem;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+    color: var(--text-color);
+}
+
+.otpContainer input:focus {
+    border-color: var(--link-color);
+    outline: none;
+}

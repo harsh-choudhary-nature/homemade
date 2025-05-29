@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "HomeMade",
   description: "An one stop buying and selling spot for all home-made items",
+  icons: {
+    icon: "/img/favicon_io/favicon.ico", // relative to /public
+  },
 };
 
 export default function RootLayout({ children }) {

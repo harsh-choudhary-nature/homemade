@@ -42,7 +42,7 @@ const LoginPage = () => {
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
 
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (err) {
       if (err.response) {
         setError(err.response.data.error || "An error occurred during login.");
