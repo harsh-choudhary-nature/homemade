@@ -18,7 +18,7 @@ const Dashboard = () => {
     return null; // Or a loading spinner if you want
   }
 
-  return <div>Welcome to the Dashboard! {user.email}</div>;
+  return <div>Welcome to the Dashboard! {user.username}</div>;
 };
 
 export default Dashboard;

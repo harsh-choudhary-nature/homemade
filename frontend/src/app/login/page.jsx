@@ -41,7 +41,10 @@ const LoginPage = () => {
 
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
+      console.log("Login response:", response.data);
+      const userData = {username: response.data.username, email: response.data.email };
 
+      login(userData);
       router.replace("/dashboard");
     } catch (err) {
       if (err.response) {

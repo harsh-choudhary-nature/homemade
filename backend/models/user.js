@@ -11,12 +11,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  isVerified: {
-    type: Boolean,
-    default: false,   // User is not verified initially
-  },
-  verificationToken: {
-    type: String,     // Store the unique token for email verification
+  username: {
+    type: String,
+    required: true,
   },
 });
 

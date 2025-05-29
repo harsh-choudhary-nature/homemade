@@ -10,7 +10,7 @@ const SignupPage = () => {
   const router = useRouter();
   const URL = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL || "http://localhost:5000";
   const [formData, setFormData] = useState({ username: '', email: '', password: '', otp: '' });
-  const [otpSent, setOtpSent] = useState(true);
+  const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -53,7 +53,7 @@ const SignupPage = () => {
     setError('');
     setSuccess('');
     try {
-      const response = await fetch(`${URL}/api/signup/send-otp`, {
+      const response = await fetch(`${URL}/auth/signup/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email }),
@@ -85,13 +85,15 @@ const SignupPage = () => {
     setError('');
     setSuccess('');
     try {
-      const response = await fetch(`${URL}/api/signup/register`, {
+      console.log("requesting to register...");
+      const response = await fetch(`${URL}/auth/signup/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
       const data = await response.json();
+      console.log("Registration response:", data);
       if (!response.ok) throw new Error(data.message || 'Registration failed');
       alert('Registration successful! Please log in.');
       router.replace('/login'); // Redirect to login page after successful registration
