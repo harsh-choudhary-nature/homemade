@@ -1,5 +1,10 @@
 const express = require("express");
-const { sendOtp, login, signup } = require("../controllers/userController");
+const {
+  sendOtp,
+  login,
+  signup,
+  refreshToken,
+} = require("../controllers/userController");
 
 const router = express.Router();
 
@@ -7,5 +12,6 @@ const router = express.Router();
 router.post("/signup/send-otp", sendOtp);
 router.post("/signup/register", signup);
 router.post("/login", login);
+router.post("/refresh-token", refreshToken);
 
 module.exports = router;

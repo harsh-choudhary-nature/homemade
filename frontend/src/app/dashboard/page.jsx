@@ -1,24 +1,21 @@
-"use client";
+// app/dashboard/page.jsx or .tsx (server component by default)
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getUserFromRequest } from "@/lib/auth"; // You need to implement this helper
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useUser } from "@/contexts/UserContext";
-
-const Dashboard = () => {
-  const { user } = useUser();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
-    }
-  }, [user, router]);
+export default async function Dashboard() {
+  // On the server, get user from cookie/session/token
+  const user = await getUserFromRequest();
 
   if (!user) {
-    return null; // Or a loading spinner if you want
+    // Redirect to login if user is not authenticated
+    redirect("/login");
   }
 
-  return <div>Welcome to the Dashboard! {user.username}</div>;
-};
-
-export default Dashboard;
+  return (
+    <div>
+      Welcome to the Dashboard!{" "}
+      <Link href="/dashboard/profile">{user.username}</Link>
+    </div>
+  );
+}

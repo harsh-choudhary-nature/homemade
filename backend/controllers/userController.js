@@ -137,16 +137,9 @@ exports.login = async (req, res) => {
     if (!isPasswordValid)
       return res.status(401).json({ error: "Invalid credentials." });
 
-    // Generate access token (short-lived)
-    const accessToken = jwt.sign(
-      { userId: user._id, email: user.email },
-      SECRET_KEY,
-      { expiresIn: "1d" } // Access token expires in 1 day
-    );
-
     // Generate refresh token (long-lived)
     const refreshToken = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id, email: user.email, username: user.username },
       SECRET_KEY,
       { expiresIn: "7d" } // Refresh token expires in 7 days
     );
@@ -162,7 +155,7 @@ exports.login = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -172,8 +165,7 @@ exports.login = async (req, res) => {
       message: "Login successful.",
       username: user.username,
       email: user.email,
-      accessToken,
-      refreshToken,
+      // accessToken,
     });
   } catch (error) {
     console.error("Error during login:", error);
@@ -203,5 +195,30 @@ exports.deleteAccount = async (req, res) => {
   } catch (err) {
     console.error("❌ Delete account error:", err);
     return res.status(403).json({ message: "Invalid or expired token" });
+  }
+};
+
+// Refresh access token
+exports.refreshToken = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken)
+    return res.status(401).json({ error: "No token provided" });
+
+  try {
+    const payload = jwt.verify(refreshToken, SECRET_KEY);
+    // Optionally check if token exists in DB
+    const savedToken = await RefreshToken.findOne({ token: refreshToken });
+    if (!savedToken) return res.status(403).json({ error: "Invalid token" });
+
+    // Generate new access token
+    const accessToken = jwt.sign(
+      { userId: payload.userId, email: payload.email },
+      SECRET_KEY,
+      { expiresIn: "15m" }
+    );
+
+    res.status(200).json({ accessToken });
+  } catch (err) {
+    return res.status(403).json({ error: "Invalid or expired token" });
   }
 };

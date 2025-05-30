@@ -14,7 +14,7 @@ const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [success, _] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,12 +37,10 @@ const LoginPage = () => {
       const response = await axios.post(`${URL}/auth/login`, {
         email: formData.email,
         password: formData.password,
-      });
+      }, { withCredentials: true }); // <-- Include cookies
 
-      localStorage.setItem("accessToken", response.data.accessToken);
-      localStorage.setItem("refreshToken", response.data.refreshToken);
       console.log("Login response:", response.data);
-      const userData = {username: response.data.username, email: response.data.email };
+      const userData = { username: response.data.username, email: response.data.email };
 
       login(userData);
       router.replace("/dashboard");
@@ -91,7 +89,7 @@ const LoginPage = () => {
           {loading ? "Logging In..." : "Log In"}
         </button>
         <p className="signup-prompt">
-          Don't have an account?&nbsp; 
+          Don't have an account?&nbsp;
           <Link href="/signup" style={{ pointerEvents: loading ? "none" : "auto", color: loading ? "gray" : "" }}>
             Sign Up
           </Link>

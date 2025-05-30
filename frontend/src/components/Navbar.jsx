@@ -46,12 +46,6 @@ const Navbar = () => {
       </div>
       <div className={styles["nav-items"]}>
 
-        {
-          user &&
-          <div className={styles["search-icon"]}>
-            <Search className={styles["material-icons"]} />
-          </div>
-        }
         <div className={styles["nav-theme"]} onClick={toggleTheme}>
           {theme === 'light' ? (
             <Moon className={styles["material-icons"]} />
@@ -62,9 +56,11 @@ const Navbar = () => {
         {user ? (
           <>
             <div className={styles["nav-user"]}>
-              <span className={styles["nav-circle-letter"]}>
-                {user.email[0].toUpperCase()}
-              </span>
+              <Link href="/dashboard/profile">
+                <span className={styles["nav-circle-letter"]}>
+                  {user.email[0].toUpperCase()}
+                </span>
+              </Link>
             </div>
 
             <Chip
