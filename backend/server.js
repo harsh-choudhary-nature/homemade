@@ -1,15 +1,14 @@
 require("dotenv").config(); // Load environment variables
-const express = require('express');
-const cors = require('cors')
+const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth");
 const dashboardRoutes = require("./routes/users");
 
-
 const app = express();
 
 const corsOptions = {
-    origin: [process.env.FRONTEND_URL], // Replace with your frontend domain
+  origin: [process.env.FRONTEND_URL], // Replace with your frontend domain
 };
 
 app.use(express.json());
@@ -21,13 +20,16 @@ app.use("/auth", authRoutes);
 app.use("/dashboard", dashboardRoutes);
 
 // Connect to MongoDB
-mongoose.connect(process.env.URI, {
+mongoose
+  .connect(process.env.URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  }).then(() => {
+  })
+  .then(() => {
     console.log("MongoDB connected");
     // Start the server
     app.listen(process.env.PORT, () => {
-        console.log(`Server is running on http://localhost:${process.env.PORT}`);
+      console.log(`Server is running on http://localhost:${process.env.PORT}`);
     });
-  }).catch(err => console.error("MongoDB connection error:", err));
+  })
+  .catch((err) => console.error("MongoDB connection error:", err));

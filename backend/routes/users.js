@@ -1,12 +1,11 @@
 const express = require("express");
-const { allUsers, deleteAllUsers } = require("../controllers/dashboardController");
+const { allUsers } = require("../controllers/dashboardController");
+const { deleteAccount } = require("../controllers/userController");
 
 const router = express.Router();
 
 // Define routes
 router.get("/users", allUsers);
-
-// Route to delete all users
-router.delete('/delete-all-users', deleteAllUsers);
+router.delete("/delete-account", deleteAccount);
 
 module.exports = router;
