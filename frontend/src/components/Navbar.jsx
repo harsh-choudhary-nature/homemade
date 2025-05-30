@@ -1,16 +1,25 @@
 "use client";
 
-import { Sun, Moon, Menu, X, Search } from 'lucide-react';
-import { useState } from 'react';
-import { useUser } from '../contexts/UserContext';
+import { Sun, Moon, Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import Chip from './Chip';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styles from './Navbar.module.css'
+import { useUser } from '@/contexts/UserContext';
 
-const Navbar = () => {
-  const { user, logout } = useUser();
+const Navbar = ({ user: initialUser }) => {
+
+  const { logout, user, login } = useUser();
+  const router = useRouter();
   const [theme, setTheme] = useState('light');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (initialUser && !user) {
+      login({ username: initialUser.username, email: initialUser.email, userId: initialUser.userId });
+    }
+  }, [initialUser, user, login]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -22,17 +31,27 @@ const Navbar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
-  const handleLogoutClick = () => {
-    logout(); // Call logout from context
+  const handleLogoutClick = async () => {
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_BACKEND_ROOT_URL + '/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }, credentials: 'include', // send cookies!
+      });
+      if (res.ok) {
+        const data = await res.json();  // parse JSON body
+        console.log('response data:', data);  // logs { message: "Logged out successfully" }
+        // Optionally clear any client-side state here if you had any
+        logout();
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
   };
 
-  const handleLoginClick = () => {
-
-  };
-
-  const handleSignupClick = () => {
-
-  };
 
   return (
     <nav className={styles["navbar"]}>
@@ -58,7 +77,7 @@ const Navbar = () => {
             <div className={styles["nav-user"]}>
               <Link href="/dashboard/profile">
                 <span className={styles["nav-circle-letter"]}>
-                  {user.email[0].toUpperCase()}
+                  {user.username[0].toUpperCase()}
                 </span>
               </Link>
             </div>
@@ -73,13 +92,11 @@ const Navbar = () => {
             <Link href="/login">
               <Chip
                 label="Login"
-                onClick={handleLoginClick}
               />
             </Link>
             <Link href="/signup">
               <Chip
                 label="Signup"
-                onClick={handleSignupClick}
               />
             </Link>
           </>

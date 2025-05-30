@@ -157,15 +157,16 @@ exports.login = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
-
+    console.log(`Logged in user: ${user.username}, ${email}`);
     // Send tokens to the client
     res.status(200).json({
       message: "Login successful.",
       username: user.username,
       email: user.email,
-      // accessToken,
+      userId: user._id,
     });
   } catch (error) {
     console.error("Error during login:", error);
@@ -195,6 +196,33 @@ exports.deleteAccount = async (req, res) => {
   } catch (err) {
     console.error("❌ Delete account error:", err);
     return res.status(403).json({ message: "Invalid or expired token" });
+  }
+};
+
+exports.logout = async (req, res) => {
+  try {
+    console.log("User attempting to log out");
+    const token = req.cookies.refreshToken;
+    if (!token) {
+      console.log("No token found, no logout needed");
+      return res.status(200).json({ message: "No content, no token found" });
+    }
+
+    // Remove token from database
+    await RefreshToken.deleteOne({ token });
+
+    // Clear cookie on client
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      path: "/",
+    });
+    console.log("User logged out");
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (err) {
+    console.error("Logout error:", err);
+    return res.status(500).json({ message: "Logout failed" });
   }
 };
 

@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 export async function getUserFromRequest() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
   if (!refreshToken) return null;
@@ -13,6 +13,7 @@ export async function getUserFromRequest() {
     const decoded = jwt.verify(refreshToken, SECRET_KEY);
     // Fetch user info from DB if needed using decoded.userId or decoded.email
     // Or just return decoded token info as user data
+    // console.log("User authenticated:", decoded);
     return {
       username: decoded.username,
       email: decoded.email,

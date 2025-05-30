@@ -40,7 +40,7 @@ const LoginPage = () => {
       }, { withCredentials: true }); // <-- Include cookies
 
       console.log("Login response:", response.data);
-      const userData = { username: response.data.username, email: response.data.email };
+      const userData = { username: response.data.username, email: response.data.email, userId: response.data.userId };
 
       login(userData);
       router.replace("/dashboard");
