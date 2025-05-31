@@ -41,9 +41,9 @@ const LoginPage = () => {
       if (response.status === 200) {
         // Force full reload so server components like NavbarWrapper re-run
 
-        router.replace("/dashboard");
-        router.refresh();
-        // window.location.href = "/dashboard"; // Redirect to dashboard page after successful login
+        // router.replace("/dashboard");
+        // router.refresh();    // soft reload (client side handling)
+        window.location.href = "/dashboard"; // Redirect to dashboard page after successful login (hard reload)
       }
     } catch (err) {
       if (err.response) {

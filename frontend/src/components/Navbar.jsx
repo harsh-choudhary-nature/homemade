@@ -37,8 +37,10 @@ const Navbar = ({ user }) => {
         console.log('response data:', data);  // logs { message: "Logged out successfully" }
        
         
-        router.replace("/login");
-        router.refresh();  // force full reload so server components like Sidebar re-run
+        // router.replace("/login");
+        // router.refresh();  // force full reload so server components like Sidebar re-run
+
+        window.location.href = "/login";  // redirect to login page after successful logout (hard reload)
       } else {
         console.error('Logout failed');
       }

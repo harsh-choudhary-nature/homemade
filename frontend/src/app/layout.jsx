@@ -34,13 +34,11 @@ export default function RootLayout({ children }) {
           <div className="App">
             <Suspense fallback={<Loader />}>
               <NavbarWrapper />
-            </Suspense>
-            <main>
-              <Suspense fallback={<Loader />}>
+              <main>
                 {children}
-              </Suspense>
-            </main>
-            <Footer />
+              </main>
+              <Footer />
+            </Suspense>
           </div>
         </UserProvider>
       </body>
