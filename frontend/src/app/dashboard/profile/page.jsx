@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // app/dashboard/profile/page.tsx or page.jsx
 import { redirect } from "next/navigation";
 import { getUserFromRequest } from "@/lib/auth"; // <- You must implement this

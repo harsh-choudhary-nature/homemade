@@ -1,9 +1,11 @@
 import { cookies } from "next/headers";
+import delay from "@/lib/delay";
 import jwt from "jsonwebtoken";
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 export async function getUserFromRequest() {
+  await delay(1500);
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
@@ -11,9 +13,7 @@ export async function getUserFromRequest() {
 
   try {
     const decoded = jwt.verify(refreshToken, SECRET_KEY);
-    // Fetch user info from DB if needed using decoded.userId or decoded.email
-    // Or just return decoded token info as user data
-    // console.log("User authenticated:", decoded);
+
     return {
       username: decoded.username,
       email: decoded.email,

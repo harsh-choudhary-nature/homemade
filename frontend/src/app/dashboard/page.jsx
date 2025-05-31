@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // app/dashboard/page.jsx or .tsx (server component by default)
 import Link from "next/link";
 import { redirect } from "next/navigation";

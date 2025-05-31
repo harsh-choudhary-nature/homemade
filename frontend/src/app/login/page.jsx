@@ -43,6 +43,7 @@ const LoginPage = () => {
 
         router.replace("/dashboard");
         router.refresh();
+        // window.location.href = "/dashboard"; // Redirect to dashboard page after successful login
       }
     } catch (err) {
       if (err.response) {

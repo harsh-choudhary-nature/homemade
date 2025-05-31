@@ -3,6 +3,8 @@ import "./globals.css";
 import Footer from "@/components/Footer";
 import NavbarWrapper from "@/components/NavbarWrapper";
 import { UserProvider } from "@/contexts/UserContext";
+import Loader from "@/components/Loader";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +32,13 @@ export default function RootLayout({ children }) {
       >
         <UserProvider>
           <div className="App">
-            <NavbarWrapper />
+            <Suspense fallback={<Loader />}>
+              <NavbarWrapper />
+            </Suspense>
             <main>
-              {children}
+              <Suspense fallback={<Loader />}>
+                {children}
+              </Suspense>
             </main>
             <Footer />
           </div>
