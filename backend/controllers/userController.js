@@ -201,7 +201,7 @@ exports.deleteAccount = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
-    console.log("User attempting to log out");
+    // console.log("User attempting to log out");
     const token = req.cookies.refreshToken;
     if (!token) {
       console.log("No token found, no logout needed");

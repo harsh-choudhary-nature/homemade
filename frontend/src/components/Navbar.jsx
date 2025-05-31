@@ -1,25 +1,18 @@
 "use client";
 
 import { Sun, Moon, Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Chip from './Chip';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './Navbar.module.css'
-import { useUser } from '@/contexts/UserContext';
 
-const Navbar = ({ user: initialUser }) => {
+const Navbar = ({ user }) => {
 
-  const { logout, user, login } = useUser();
   const router = useRouter();
   const [theme, setTheme] = useState('light');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    if (initialUser && !user) {
-      login({ username: initialUser.username, email: initialUser.email, userId: initialUser.userId });
-    }
-  }, [initialUser, user, login]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -42,8 +35,10 @@ const Navbar = ({ user: initialUser }) => {
       if (res.ok) {
         const data = await res.json();  // parse JSON body
         console.log('response data:', data);  // logs { message: "Logged out successfully" }
-        // Optionally clear any client-side state here if you had any
-        logout();
+       
+        
+        router.replace("/login");
+        router.refresh();  // force full reload so server components like Sidebar re-run
       } else {
         console.error('Logout failed');
       }

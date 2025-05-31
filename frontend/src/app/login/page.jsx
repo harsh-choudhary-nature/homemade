@@ -4,11 +4,9 @@ import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import axios from "axios";
-import { useUser } from "@/contexts/UserContext";
 import LoaderComponent from "@/components/Loader";
 
 const LoginPage = () => {
-  const { login } = useUser();
   const router = useRouter();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -40,10 +38,12 @@ const LoginPage = () => {
       }, { withCredentials: true }); // <-- Include cookies
 
       console.log("Login response:", response.data);
-      const userData = { username: response.data.username, email: response.data.email, userId: response.data.userId };
+      if (response.status === 200) {
+        // Force full reload so server components like NavbarWrapper re-run
 
-      login(userData);
-      router.replace("/dashboard");
+        router.replace("/dashboard");
+        router.refresh();
+      }
     } catch (err) {
       if (err.response) {
         setError(err.response.data.error || "An error occurred during login.");
