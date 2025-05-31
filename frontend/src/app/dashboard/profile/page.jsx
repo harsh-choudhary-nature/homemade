@@ -1,17 +1,30 @@
 "use client"; // we need client here because of interactions & uploads
 
 import { useUser } from "@/contexts/UserContext";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation"; // use next/navigation for app router
+import Edit from "@/components/Icons/Edit";
+
 
 export default function Profile() {
 
   const { user } = useUser();
-  const [username, setUsername] = useState(user.username);
-  const [password, setPassword] = useState("");
-  const [profilePic, setProfilePic] = useState(user.profilePictureUrl || null);
+  const router = useRouter();
+  useEffect(() => {
+    if (!user) {
+      router.replace("/login");
+    }
+  }, [user, router]);
+
+  const [username, setUsername] = useState(user?.username);
+  const [tempUsername, setTempUsername] = useState(user?.username);
+  const [email, setEmail] = useState(user?.email);
+  const [profilePic, setProfilePic] = useState(user?.profilePictureUrl || null);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState(null);
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
   const fileInputRef = useRef(null);
+
 
   // Upload handler - simulate
   async function handleUpload(e) {
@@ -48,7 +61,11 @@ export default function Profile() {
   const firstLetter = username?.[0]?.toUpperCase() || "?";
 
   return (
-    <main className="max-w-lg mx-auto p-6">
+    <main className={`max-w-lg mx-auto p-6 bg-${"var(--secondary-color)"} rounded-xl shadow-lg`} style={{
+      backgroundColor: "var(--secondary-color)",
+      flexGrow: 0,
+
+    }}>
       <h1 className="text-3xl font-semibold mb-6 text-center" style={{ color: "var(--text-color)" }}>
         Your Profile
       </h1>
@@ -71,24 +88,10 @@ export default function Profile() {
         )}
 
         {/* Pencil Icon Overlay */}
-        <button
-          type="button"
-          onClick={() => fileInputRef.current.click()}
-          className="absolute bottom-0 right-0 bg-accent-color hover:bg-accent-color/80 text-white rounded-full p-2 shadow-lg focus:outline-none"
-          aria-label="Change profile picture"
-          style={{ backgroundColor: "var(--accent-color)" }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-            className="w-5 h-5"
-          >
-            <path d="M15.232 5.232l3.536 3.536M16.5 4.5a2.121 2.121 0 0 1 3 3L7 20.5H4v-3L16.5 4.5z" />
-          </svg>
-        </button>
+        <Edit onClick={() => fileInputRef.current.click()}
+          className="absolute bottom-0 right-0 bg-accent-color hover:bg-accent-color/80 text-white rounded-full p-2 shadow-lg focus:outline-none transition duration-200 transform hover:scale-105 active:scale-90"
+          ariaLabel="Change profile picture"
+          style={{ backgroundColor: "var(--accent-color)" }} />
         <input
           type="file"
           ref={fileInputRef}
@@ -114,59 +117,92 @@ export default function Profile() {
             backgroundColor: "var(--primary-color)",
             color: "var(--text-color)",
             borderColor: "var(--nav-border-color)",
+            marginBottom: "0.5rem",
           }}
+          disabled={!isEditingUsername}
         />
+        <div className="text-sm mt-0">
+          {!isEditingUsername ? (
+            <button
+              type="button"
+              className="text-blue-500 hover:underline"
+              style={{ color: "var(--accent-color)" }}
+              onClick={() => {
+                setTempUsername(username); // store the current value temporarily
+                setIsEditingUsername(true);
+              }}
+            >
+              Edit
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="text-green-600 hover:underline mr-4"
+                onClick={() => {
+                  // Dummy save handler
+                  console.log("Saved:", username);
+                  setIsEditingUsername(false);
+                }}
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                className="text-red-500 hover:underline"
+                onClick={() => {
+                  setUsername(tempUsername); // revert to previous value
+                  setIsEditingUsername(false);
+                }}
+              >
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Password */}
+      {/* Username */}
       <div className="form-group">
-        <label htmlFor="password" style={{ color: "var(--text-color)" }}>
-          New Password
+        <label htmlFor="email" style={{ color: "var(--text-color)" }}>
+          Email
         </label>
         <input
-          id="password"
-          type="password"
+          id="email"
+          type="text"
           className="form-group input"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter new password"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           style={{
             backgroundColor: "var(--primary-color)",
             color: "var(--text-color)",
             borderColor: "var(--nav-border-color)",
           }}
+          disabled={true}
         />
       </div>
 
-      {/* Save Button */}
-      <button
-        className="signup-button login-button"
-        onClick={handleSave}
-        disabled={isSaving}
-        style={{ marginTop: "1rem" }}
-      >
-        {isSaving ? "Saving..." : "Save Changes"}
-      </button>
 
-      {message && (
-        <div className="success-message" style={{ marginTop: "10px" }}>
-          {message}
-        </div>
-      )}
+      <div className="flex justify-between gap-4 mt-6">
+        <button
+          className="flex-1 signup-button login-button"
+          onClick={() => router.push("/change-password")}
+          style={{ fontWeight: "bold" }}
+        >
+          Change Password
+        </button>
 
-      {/* Delete Account */}
-      <button
-        className="signup-button login-button"
-        style={{
-          marginTop: "2rem",
-          backgroundColor: "var(--link-color)",
-          color: "var(--primary-color)",
-          fontWeight: "bold",
-        }}
-        onClick={handleDelete}
-      >
-        Delete Account
-      </button>
+        <button
+          className="flex-1 signup-button login-button"
+          style={{
+            backgroundColor: "var(--failure-color)",
+            fontWeight: "bold",
+          }}
+          onClick={handleDelete}
+        >
+          Delete Account
+        </button>
+      </div>
     </main>
   );
 }
