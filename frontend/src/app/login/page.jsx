@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import axios from "axios";
-import LoaderComponent from "@/components/Loader";
+import LoaderComponent from "@/components/Loader/Loader";
+import { useUser } from "@/contexts/UserContext";
 
 const LoginPage = () => {
   const router = useRouter();
-
+  const { login } = useUser();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -41,9 +42,9 @@ const LoginPage = () => {
       if (response.status === 200) {
         // Force full reload so server components like NavbarWrapper re-run
 
-        // router.replace("/dashboard");
-        // router.refresh();    // soft reload (client side handling)
-        window.location.href = "/dashboard"; // Redirect to dashboard page after successful login (hard reload)
+        const { userId, username, email } = response.data; // Extract user data from response
+        login({ userId, username, email });
+        router.replace("/dashboard");
       }
     } catch (err) {
       if (err.response) {

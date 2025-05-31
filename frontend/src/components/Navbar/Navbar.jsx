@@ -1,13 +1,16 @@
 "use client";
 
 import { Sun, Moon, Menu, X } from 'lucide-react';
-import { useState } from 'react';
-import Chip from './Chip';
+import { useEffect, useState } from 'react';
+import Chip from '../Chip/Chip';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './Navbar.module.css'
+import { useUser } from '@/contexts/UserContext';
 
-const Navbar = ({ user }) => {
+const Navbar = () => {
+
+  const { user, logout } = useUser();
 
   const router = useRouter();
   const [theme, setTheme] = useState('light');
@@ -35,12 +38,11 @@ const Navbar = ({ user }) => {
       if (res.ok) {
         const data = await res.json();  // parse JSON body
         console.log('response data:', data);  // logs { message: "Logged out successfully" }
-       
-        
-        // router.replace("/login");
-        // router.refresh();  // force full reload so server components like Sidebar re-run
 
-        window.location.href = "/login";  // redirect to login page after successful logout (hard reload)
+
+        logout();
+        router.replace("/login");
+        
       } else {
         console.error('Logout failed');
       }
@@ -71,13 +73,13 @@ const Navbar = ({ user }) => {
         </div>
         {user ? (
           <>
-            <div className={styles["nav-user"]}>
-              <Link href="/dashboard/profile">
+            <Link href="/dashboard/profile">
+              <div className={styles["nav-user"]}>
                 <span className={styles["nav-circle-letter"]}>
                   {user.username[0].toUpperCase()}
                 </span>
-              </Link>
-            </div>
+              </div>
+            </Link>
 
             <Chip
               label="Logout"

@@ -1,10 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Footer from "@/components/Footer";
-import NavbarWrapper from "@/components/NavbarWrapper";
-import { UserProvider } from "@/contexts/UserContext";
-import Loader from "@/components/Loader";
+import AuthGate from "@/components/AuthGate/AuthGate";
 import { Suspense } from "react";
+import Loader from "@/components/Loader/Loader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,22 +23,15 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
-        <UserProvider>
-          <div className="App">
-            <Suspense fallback={<Loader />}>
-              <NavbarWrapper />
-              <main>
-                {children}
-              </main>
-              <Footer />
-            </Suspense>
-          </div>
-        </UserProvider>
+        <Suspense fallback={<Loader />}>
+          <AuthGate>{children}</AuthGate>
+        </Suspense>
       </body>
     </html>
   );

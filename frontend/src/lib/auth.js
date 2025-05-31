@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 export async function getUserFromRequest() {
-  await delay(1500);
+  // await delay(5000);
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
@@ -14,11 +14,7 @@ export async function getUserFromRequest() {
   try {
     const decoded = jwt.verify(refreshToken, SECRET_KEY);
 
-    return {
-      username: decoded.username,
-      email: decoded.email,
-      userId: decoded.userId,
-    };
+    return { ...decoded };
   } catch (err) {
     return null;
   }

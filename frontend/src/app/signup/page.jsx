@@ -3,12 +3,12 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
-import LoaderComponent from '@/components/Loader';
+import LoaderComponent from '@/components/Loader/Loader';
 import styles from './Signup.module.css';
 
 const SignupPage = () => {
   const router = useRouter();
-  const URL = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL || "http://localhost:5000";
+  const URL = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
   const [formData, setFormData] = useState({ username: '', email: '', password: '', otp: '' });
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
