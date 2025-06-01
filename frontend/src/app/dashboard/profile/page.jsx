@@ -22,6 +22,8 @@ export default function Profile() {
   const [profilePic, setProfilePic] = useState(user?.profilePictureUrl || null);
   const [tempProfilePic, setTempProfilePic] = useState(user?.profilePictureUrl || null);
   const [isEditingProfilePic, setIsEditingProfilePic] = useState(false);
+  const [isViewingFullImage, setIsViewingFullImage] = useState(false);
+
 
   const [isSaving, setIsSaving] = useState(false);
   const [messageError, setMessageError] = useState(null);
@@ -35,7 +37,7 @@ export default function Profile() {
       setMessageError("Please save or cancel the last changes.");
       return;
     }
-  
+
     setMessageError(null); // clear old errors
     fileInputRef.current.click();
   }
@@ -73,6 +75,27 @@ export default function Profile() {
     // TODO: redirect to login or home after deletion
   }
 
+  function handleDownloadClick() {
+    const link = document.createElement("a");
+    link.href = profilePic;
+    link.download = ""; // Leaving blank allows user to choose filename in most modern browsers
+
+    // Fetch the blob first if the image is a blob URL or remote URL
+    fetch(profilePic)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const blobUrl = URL.createObjectURL(blob);
+        link.href = blobUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+      })
+      .catch((err) => {
+        console.error("Failed to download image:", err);
+      });
+  }
+
   const firstLetter = username?.[0]?.toUpperCase() || "?";
 
   return (
@@ -92,6 +115,7 @@ export default function Profile() {
             src={profilePic}
             alt="Profile"
             className="rounded-full w-32 h-32 object-cover border border-gray-300"
+            onClick={() => setIsViewingFullImage(true)}
           />
         ) : (
           <div
@@ -99,6 +123,35 @@ export default function Profile() {
             style={{ color: "var(--text-color)" }}
           >
             {firstLetter}
+          </div>
+        )}
+
+        {isViewingFullImage && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center px-4">
+            <div className="relative max-w-full max-h-full flex flex-col items-center justify-center">
+              <img
+                src={profilePic}
+                alt="Full Profile"
+                className="max-w-full max-h-[90vh] rounded-lg shadow-xl"
+              />
+            </div>
+
+            {/* Controls */}
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4">
+              <a
+                href={profilePic}
+                onClick={handleDownloadClick}
+                className="bg-white text-black px-4 py-2 rounded-md shadow hover:bg-gray-200 transition"
+              >
+                Download
+              </a>
+              <button
+                onClick={() => setIsViewingFullImage(false)}
+                className="bg-red-600 text-white px-4 py-2 rounded-md shadow hover:bg-red-500 transition"
+              >
+                Close
+              </button>
+            </div>
           </div>
         )}
 
