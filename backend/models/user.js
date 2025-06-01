@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
+  profilePicture: {
+    type: String, // URL or base64 string
+    default: null,
+  },
 });
 
 // Create and export the user model
