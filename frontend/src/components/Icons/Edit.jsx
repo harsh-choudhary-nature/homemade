@@ -1,4 +1,4 @@
-export default function Edit({ onClick, className, ariaLabel, style }) {
+export default function Edit({ onClick, className, ariaLabel, style, disabled }) {
 
     return (
         <button
@@ -7,6 +7,7 @@ export default function Edit({ onClick, className, ariaLabel, style }) {
             className={className}
             aria-label={ariaLabel}
             style={style}
+            disabled={disabled}
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"

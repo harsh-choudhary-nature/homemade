@@ -20,11 +20,25 @@ export default function Profile() {
   const [tempUsername, setTempUsername] = useState(user?.username);
   const [email, setEmail] = useState(user?.email);
   const [profilePic, setProfilePic] = useState(user?.profilePictureUrl || null);
+  const [tempProfilePic, setTempProfilePic] = useState(user?.profilePictureUrl || null);
+  const [isEditingProfilePic, setIsEditingProfilePic] = useState(false);
+
   const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [messageError, setMessageError] = useState(null);
+  const [messageSuccess, setMessageSuccess] = useState(null);
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const fileInputRef = useRef(null);
 
+
+  function handleEditClick() {
+    if (isEditingProfilePic) {
+      setMessageError("Please save or cancel the last changes.");
+      return;
+    }
+  
+    setMessageError(null); // clear old errors
+    fileInputRef.current.click();
+  }
 
   // Upload handler - simulate
   async function handleUpload(e) {
@@ -33,6 +47,7 @@ export default function Profile() {
 
     // TODO: Upload file to server here and get URL
     // For now, create a local preview
+    setIsEditingProfilePic(true);
     const url = URL.createObjectURL(file);
     setProfilePic(url);
   }
@@ -88,10 +103,10 @@ export default function Profile() {
         )}
 
         {/* Pencil Icon Overlay */}
-        <Edit onClick={() => fileInputRef.current.click()}
+        <Edit onClick={handleEditClick}
           className="absolute bottom-0 right-0 bg-accent-color hover:bg-accent-color/80 text-white rounded-full p-2 shadow-lg focus:outline-none transition duration-200 transform hover:scale-105 active:scale-90"
           ariaLabel="Change profile picture"
-          style={{ backgroundColor: "var(--accent-color)" }} />
+          style={{ backgroundColor: "var(--accent-color)" }} disabled={false} />
         <input
           type="file"
           ref={fileInputRef}
@@ -99,6 +114,32 @@ export default function Profile() {
           accept="image/*"
           className="hidden"
         />
+        {/* Save / Cancel if new image selected */}
+        {isEditingProfilePic && (
+          <div className="text-sm mt-0 flex justify-center gap-x-4">
+            <button
+              className="text-green-600 hover:underline mr-4"
+              onClick={() => {
+                console.log("Image saved");
+                setIsEditingProfilePic(false);
+                setMessageError(null);
+              }}
+            >
+              Save
+            </button>
+            <button
+              className="text-red-500 hover:underline"
+              onClick={() => {
+                setProfilePic(tempProfilePic); // Discard selected image
+                console.log("Image change canceled");
+                setIsEditingProfilePic(false);
+                setMessageError(null);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Username */}
@@ -203,6 +244,16 @@ export default function Profile() {
           Delete Account
         </button>
       </div>
+      {messageError && (
+        <div className="mt-4 text-sm text-red-600 text-left w-full">
+          {messageError}
+        </div>
+      )}
+      {messageSuccess && (
+        <div className="mt-4 text-sm text-red-600 text-left w-full">
+          {messageSuccess}
+        </div>
+      )}
     </main>
   );
 }
