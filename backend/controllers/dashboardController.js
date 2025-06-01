@@ -16,7 +16,7 @@ exports.updateProfile = async (req, res) => {
   console.log("updateProfile called with body:", req.body);
   const { username, oldPassword, newPassword } = req.body;
   console.log("username", username);
-  const userId = req.user.id; // req.user exists due to middleware/auth.js
+  const userId = req.user.userId; // req.user exists due to middleware/auth.js
   console.log("userId", userId);
 
   try {
@@ -45,7 +45,7 @@ exports.updateProfile = async (req, res) => {
     // Generate new refresh token
     const newRefreshToken = jwt.sign(
       {
-        id: user._id,
+        userId: user._id,
         username: user.username,
         email: user.email,
       },
@@ -97,6 +97,18 @@ exports.updateProfilePicture = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating profile picture:", error);
+    res.status(500).json({ message: "Server error." });
+  }
+};
+
+exports.getAuthenticatedUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error("Error fetching user:", error);
     res.status(500).json({ message: "Server error." });
   }
 };

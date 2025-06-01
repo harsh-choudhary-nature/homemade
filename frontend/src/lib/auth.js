@@ -1,21 +1,33 @@
-import { cookies } from "next/headers";
 import delay from "@/lib/delay";
-import jwt from "jsonwebtoken";
-
-const SECRET_KEY = process.env.JWT_SECRET_KEY;
+import { cookies } from "next/headers";
 
 export async function getUserFromRequest() {
   // await delay(5000);
-  const cookieStore = await cookies();
-  const refreshToken = cookieStore.get("refreshToken")?.value;
-
-  if (!refreshToken) return null;
-
   try {
-    const decoded = jwt.verify(refreshToken, SECRET_KEY);
+    const cookieStore = await cookies();
+    const refreshToken = cookieStore.get("refreshToken")?.value;
 
-    return { ...decoded };
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_ROOT_URL}/dashboard/user/me`,
+      {
+        headers: {
+          // Forward cookie header manually
+          cookie: refreshToken ? `refreshToken=${refreshToken}` : "",
+        },
+        method: "GET",
+        credentials: "include", // Send cookies
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) {
+      console.log("Auth error:", data.message);
+      return null;
+    }
+    console.log("data:", data);
+    console.log("Authenticated user:", data.user);
+    return data.user;
   } catch (err) {
+    console.error("Error fetching user:", err);
     return null;
   }
 }
