@@ -4,11 +4,12 @@ import { useUser } from "@/contexts/UserContext";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation"; // use next/navigation for app router
 import Edit from "@/components/Icons/Edit";
+import Loader from "@/components/Loader/Loader";
 
 
 export default function Profile() {
 
-  const { user } = useUser();
+  const { user, login } = useUser();
   const router = useRouter();
   useEffect(() => {
     if (!user) {
@@ -21,6 +22,7 @@ export default function Profile() {
   const [email, setEmail] = useState(user?.email);
   const [profilePic, setProfilePic] = useState(user?.profilePictureUrl || null);
   const [tempProfilePic, setTempProfilePic] = useState(user?.profilePictureUrl || null);
+  const [tempProfilePicFile, setTempProfilePicFile] = useState(null);
   const [isEditingProfilePic, setIsEditingProfilePic] = useState(false);
   const [isViewingFullImage, setIsViewingFullImage] = useState(false);
 
@@ -31,8 +33,7 @@ export default function Profile() {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const fileInputRef = useRef(null);
 
-
-  function handleEditClick() {
+  function handleProfilePicEditClick() {
     if (isEditingProfilePic) {
       setMessageError("Please save or cancel the last changes.");
       return;
@@ -42,28 +43,80 @@ export default function Profile() {
     fileInputRef.current.click();
   }
 
-  // Upload handler - simulate
-  async function handleUpload(e) {
+  async function handleProfilePicChange(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    // TODO: Upload file to server here and get URL
-    // For now, create a local preview
     setIsEditingProfilePic(true);
     const url = URL.createObjectURL(file);
+    setTempProfilePicFile(file);
     setProfilePic(url);
   }
 
-  async function handleSave() {
+  async function handleUploadProfilePic() {
+    if (!tempProfilePicFile) {
+      setMessageError("No file to upload");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("profilePicture", tempProfilePicFile);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ROOT_URL}/dashboard/user/profile-picture`, {
+        method: "POST",
+        headers: {
+        }, credentials: 'include', // send cookies!,
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await res.json();
+
+      URL.revokeObjectURL(profilePic);
+      setProfilePic(data.profilePictureUrl); // Set the actual server URL
+      setTempFile(null);
+      setIsEditingProfilePic(false);
+      setMessageSuccess("Profile picture updated");
+      setMessageError(null);
+      login({ ...user, profilePictureUrl: data.profilePictureUrl }); // Update user context
+      console.log("Image saved");
+    } catch (err) {
+      console.error(err);
+      setMessageError("Failed to upload image");
+    }
+  }
+
+  async function handleSaveUsername() {
     setIsSaving(true);
-    setMessage(null);
+    setMessageError(null);
+    setMessageSuccess(null);
 
-    // TODO: call API to update username/password/profilePic
-    // Simulate delay
-    await new Promise((r) => setTimeout(r, 1000));
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ROOT_URL}/dashboard/user/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        }, credentials: 'include', // send cookies!
+        body: JSON.stringify({
+          username,
+        }),
+      });
+      console.log("res", res);
+      if (!res.ok) throw new Error("Failed to update profile");
 
-    setIsSaving(false);
-    setMessage("Profile updated successfully!");
+      const data = await res.json();
+      setIsSaving(false);
+      setMessageSuccess("Profile updated successfully!");
+      setIsEditingUsername(false);
+
+      login({ ...user, username }); // Update user context
+    } catch (err) {
+      console.error(err);
+      setIsSaving(false);
+      setMessageError("Update failed. Please try again.");
+    }
   }
 
   async function handleDelete() {
@@ -79,25 +132,25 @@ export default function Profile() {
     try {
       const response = await fetch(profilePic);
       const blob = await response.blob();
-  
+
       const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
-  
+
       // Provide a default filename or extract from URL if possible
       const filename = profilePic.split("/").pop().split("?")[0] || "profile-pic.png";
       link.download = filename;
-  
+
       document.body.appendChild(link);
       link.click();
-  
+
       document.body.removeChild(link);
       URL.revokeObjectURL(blobUrl);
     } catch (err) {
       console.error("Failed to download image:", err);
     }
   }
-  
+
 
   const firstLetter = username?.[0]?.toUpperCase() || "?";
 
@@ -159,14 +212,14 @@ export default function Profile() {
         )}
 
         {/* Pencil Icon Overlay */}
-        <Edit onClick={handleEditClick}
+        <Edit onClick={handleProfilePicEditClick}
           className="absolute bottom-0 right-0 bg-accent-color hover:bg-accent-color/80 text-white rounded-full p-2 shadow-lg focus:outline-none transition duration-200 transform hover:scale-105 active:scale-90"
           ariaLabel="Change profile picture"
           style={{ backgroundColor: "var(--accent-color)" }} disabled={false} />
         <input
           type="file"
           ref={fileInputRef}
-          onChange={handleUpload}
+          onChange={handleProfilePicChange}
           accept="image/*"
           className="hidden"
         />
@@ -175,11 +228,7 @@ export default function Profile() {
           <div className="text-sm mt-0 flex justify-center gap-x-4">
             <button
               className="text-green-600 hover:underline mr-4"
-              onClick={() => {
-                console.log("Image saved");
-                setIsEditingProfilePic(false);
-                setMessageError(null);
-              }}
+              onClick={handleUploadProfilePic}
             >
               Save
             </button>
@@ -236,11 +285,7 @@ export default function Profile() {
               <button
                 type="button"
                 className="text-green-600 hover:underline mr-4"
-                onClick={() => {
-                  // Dummy save handler
-                  console.log("Saved:", username);
-                  setIsEditingUsername(false);
-                }}
+                onClick={handleSaveUsername}
               >
                 Save
               </button>
@@ -308,6 +353,11 @@ export default function Profile() {
       {messageSuccess && (
         <div className="mt-4 text-sm text-red-600 text-left w-full">
           {messageSuccess}
+        </div>
+      )}
+      {isSaving && (
+        <div className="mt-4 text-sm text-red-600 text-left w-full mx-auto">
+          <Loader />
         </div>
       )}
     </main>

@@ -2,8 +2,10 @@ const express = require("express");
 const {
   allUsers,
   updateProfile,
+  updateProfilePicture,
 } = require("../controllers/dashboardController");
 const authMiddleware = require("../middlewares/auth");
+const upload = require("../middlewares/upload");
 const { deleteAccount } = require("../controllers/userController");
 
 const router = express.Router();

@@ -1,4 +1,6 @@
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+const RefreshTokenModel = require("../models/refreshToken");
 
 exports.allUsers = async (req, res) => {
   try {
@@ -11,8 +13,11 @@ exports.allUsers = async (req, res) => {
 };
 
 exports.updateProfile = async (req, res) => {
+  console.log("updateProfile called with body:", req.body);
   const { username, oldPassword, newPassword } = req.body;
-  const userId = req.user.userId; // req.user exists due to middleware/auth.js
+  console.log("username", username);
+  const userId = req.user.id; // req.user exists due to middleware/auth.js
+  console.log("userId", userId);
 
   try {
     const user = await User.findById(userId);
@@ -35,8 +40,34 @@ exports.updateProfile = async (req, res) => {
       const hashed = await bcrypt.hash(newPassword, 10);
       user.password = hashed;
     }
-
     await user.save();
+    console.log(`Profile updated for user: ${user}`);
+    // Generate new refresh token
+    const newRefreshToken = jwt.sign(
+      {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+
+    // Update refresh token in DB
+    await RefreshTokenModel.findOneAndUpdate(
+      { userId: user._id },
+      { token: newRefreshToken },
+      { upsert: true, new: true }
+    );
+
+    // Set new refresh token as HTTP-only cookie
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
     res.status(200).json({ message: "Profile updated successfully." });
   } catch (err) {
     console.error("Update error:", err);

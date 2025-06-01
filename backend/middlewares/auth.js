@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
-const RefreshToken = require("../models/RefreshToken");
-const SECRET_KEY = process.env.SECRET_KEY;
+const RefreshToken = require("../models/refreshToken");
+const SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 module.exports = async function (req, res, next) {
+  console.log("Checking JWT...");
   const token = req.cookies?.refreshToken;
 
   if (!token) {
@@ -18,7 +19,7 @@ module.exports = async function (req, res, next) {
     if (!tokenInDb) {
       return res.status(401).json({ message: "Unauthorized: Token not found" });
     }
-
+    console.log("JWT verified successfully", decoded);
     req.user = decoded; // Attach user data to the request
     next();
   } catch (err) {
