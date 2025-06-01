@@ -143,7 +143,7 @@ export default function Profile() {
             <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4">
               <a
                 href={profilePic}
-                onClick={handleDownloadClick}
+                download
                 className="bg-white text-black px-4 py-2 rounded-md shadow hover:bg-gray-200 transition"
               >
                 Download
