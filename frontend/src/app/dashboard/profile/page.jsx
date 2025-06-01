@@ -75,26 +75,29 @@ export default function Profile() {
     // TODO: redirect to login or home after deletion
   }
 
-  function handleDownloadClick() {
-    const link = document.createElement("a");
-    link.href = profilePic;
-    link.download = ""; // Leaving blank allows user to choose filename in most modern browsers
-
-    // Fetch the blob first if the image is a blob URL or remote URL
-    fetch(profilePic)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const blobUrl = URL.createObjectURL(blob);
-        link.href = blobUrl;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(blobUrl);
-      })
-      .catch((err) => {
-        console.error("Failed to download image:", err);
-      });
+  async function handleDownloadClick(profilePic) {
+    try {
+      const response = await fetch(profilePic);
+      const blob = await response.blob();
+  
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+  
+      // Provide a default filename or extract from URL if possible
+      const filename = profilePic.split("/").pop().split("?")[0] || "profile-pic.png";
+      link.download = filename;
+  
+      document.body.appendChild(link);
+      link.click();
+  
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("Failed to download image:", err);
+    }
   }
+  
 
   const firstLetter = username?.[0]?.toUpperCase() || "?";
 
