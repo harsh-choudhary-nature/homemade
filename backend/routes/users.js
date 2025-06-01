@@ -18,7 +18,7 @@ router.put("/user/update", authMiddleware, updateProfile);
 router.put(
   "/user/profile-picture",
   authMiddleware,
-  upload.single("profile"),
+  upload.single("profilePicture"),
   updateProfilePicture
 );
 router.delete("/delete-account", deleteAccount);

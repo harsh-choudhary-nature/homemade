@@ -62,7 +62,7 @@ export default function Profile() {
     formData.append("profilePicture", tempProfilePicFile);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ROOT_URL}/dashboard/user/profile-picture`, {
-        method: "POST",
+        method: "PUT",
         headers: {
         }, credentials: 'include', // send cookies!,
         body: formData,
@@ -76,7 +76,7 @@ export default function Profile() {
 
       URL.revokeObjectURL(profilePic);
       setProfilePic(data.profilePictureUrl); // Set the actual server URL
-      setTempFile(null);
+      setTempProfilePicFile(null);
       setIsEditingProfilePic(false);
       setMessageSuccess("Profile picture updated");
       setMessageError(null);

@@ -77,7 +77,7 @@ exports.updateProfile = async (req, res) => {
 
 exports.updateProfilePicture = async (req, res) => {
   const userId = req.user.userId;
-
+  console.log("updateProfilePicture", req.user);
   if (!req.file || !req.file.path) {
     return res.status(400).json({ message: "No image uploaded." });
   }
@@ -87,13 +87,13 @@ exports.updateProfilePicture = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
       userId,
-      { profilePicture: imageUrl },
+      { profilePictureUrl: imageUrl },
       { new: true }
     );
 
     res.status(200).json({
       message: "Profile picture updated.",
-      profilePicture: imageUrl,
+      profilePictureUrl: imageUrl,
     });
   } catch (error) {
     console.error("Error updating profile picture:", error);
